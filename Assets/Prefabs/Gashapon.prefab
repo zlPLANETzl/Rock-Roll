@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 4061151568150047436}
   - component: {fileID: 3009923988452432368}
   - component: {fileID: 5510288295511680395}
-  - component: {fileID: 981683166604695097}
   - component: {fileID: 347838473568006931}
+  - component: {fileID: 504494863274574783}
   m_Layer: 0
   m_Name: Gashapon
   m_TagString: Untagged
@@ -107,7 +107,23 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!54 &981683166604695097
+--- !u!114 &347838473568006931
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4510233174220648028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a1566a4415d6d14086034afe7b0f9ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initialSpeed: 10
+  accelerationPerSec: 10
+  maxSpeed: 50
+  spinSpeed: 720
+--- !u!54 &504494863274574783
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -133,18 +149,4 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
---- !u!114 &347838473568006931
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4510233174220648028}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a1566a4415d6d14086034afe7b0f9ab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  acceleration: 1000
-  maxSpeed: 6
+  m_CollisionDetection: 1

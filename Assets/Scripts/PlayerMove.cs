@@ -70,7 +70,8 @@ public class PlayerMove : MonoBehaviour
     // 콜백으로 플레이어 복귀
     void OnDashEnd(Vector3 returnPosition)
     {
-        transform.position = returnPosition;
+        returnPosition.y -= 1.5f;
+        transform.position = returnPosition;    
         gameObject.SetActive(true);
         isDashing = false;
     }
