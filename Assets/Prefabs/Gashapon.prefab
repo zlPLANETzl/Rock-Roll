@@ -120,7 +120,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   initialSpeed: 10
-  accelerationPerSec: 10
+  accelerationPerSec: 20
   maxSpeed: 50
   spinSpeed: 720
 --- !u!54 &504494863274574783

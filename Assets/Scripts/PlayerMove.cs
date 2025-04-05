@@ -4,14 +4,17 @@ using UnityEngine;
 
 public class PlayerMove : MonoBehaviour
 {
-    public float playerMoveSpeed = 5f;
-    public Transform modelController;
-    public GameObject dashBallPrefab;
+    public bool isDashing = false;
 
+    [SerializeField]
+    private Transform modelController;
+    [SerializeField]
+    private GameObject dashBallPrefab;
+    
+    private float playerMoveSpeed = 5f;
     private Vector3 lastMoveDir = Vector3.forward;
     private CharacterController cc;
-    private bool isDashing = false;
-
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -54,25 +57,22 @@ public class PlayerMove : MonoBehaviour
     void StartDash()
     {
         isDashing = true;
-
-        Vector3 dashDir = transform.forward;
-        Vector3 spawnPos = transform.position;
-
-        // 플레이어 비활성화
         gameObject.SetActive(false);
 
-        // 공 프리팹 생성
-        Vector3 spawnOffset = new Vector3(0, 1.5f, 0); // Y축으로 +1.5
-        GameObject ball = Instantiate(dashBallPrefab, transform.position + spawnOffset, Quaternion.LookRotation(lastMoveDir));
+        GameObject ball = Instantiate(dashBallPrefab, transform.position + Vector3.up * 1.5f, Quaternion.LookRotation(lastMoveDir));
         ball.GetComponent<PlayerDash>().Init(lastMoveDir, OnDashEnd);
+
+        Camera.main.GetComponent<CameraFollow>().SetTarget(ball.transform);
     }
 
-    // 콜백으로 플레이어 복귀
     void OnDashEnd(Vector3 returnPosition)
     {
-        returnPosition.y -= 1.5f;
-        transform.position = returnPosition;    
+        returnPosition.y -= 1.5f; // Y 보정
+
+        transform.position = returnPosition;
         gameObject.SetActive(true);
         isDashing = false;
+
+        Camera.main.GetComponent<CameraFollow>().SetTarget(transform);
     }
 }

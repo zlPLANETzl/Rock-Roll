@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class PlayerDash : MonoBehaviour
 {
-    public float initialSpeed = 10f;           // 시작 속도 (플레이어 기본 이동속도 5의 2배)
-    public float accelerationPerSec = 10f;     // 초당 가속도
-    public float maxSpeed = 50f;               // 최대 속도
     public float spinSpeed = 720f;             // 회전 속도 (연출용)
 
+    private float initialSpeed = 10f;           // 시작 속도 (플레이어 기본 이동속도 5의 2배)
+    private float accelerationPerSec = 10f;     // 초당 가속도
+    private float maxSpeed = 50f;               // 최대 속도
     private Vector3 direction;
     private float currentSpeed;
     private float elapsedTime;
