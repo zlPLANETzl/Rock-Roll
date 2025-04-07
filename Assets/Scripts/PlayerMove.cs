@@ -4,75 +4,74 @@ using UnityEngine;
 
 public class PlayerMove : MonoBehaviour
 {
-    public bool isDashing = false;
+    [SerializeField] private Transform model; // 회전 대상 모델
+    [SerializeField] private GameObject normalModel; // 기본 상태 모델
+    [SerializeField] private GameObject dashModel;   // 대시 상태 모델
+    [SerializeField] private float moveSpeed = 5f; // 기본 이동 속도
 
-    [SerializeField]
-    private Transform modelController;
-    [SerializeField]
-    private GameObject dashBallPrefab;
-    
-    private float playerMoveSpeed = 5f;
-    private Vector3 lastMoveDir = Vector3.forward;
-    private CharacterController cc;
-    
-    // Start is called before the first frame update
-    void Start()
-    {
-        cc = GetComponent<CharacterController>();
-    }
+    private Vector3 lastMoveDir = Vector3.forward; // 마지막 이동 방향
+    private float dashStartSpeed = 10f;     // 대시 시작 속도
+    private float dashAcceleration = 20f;   // 초당 가속량
+    private float dashMaxSpeed = 50f;       // 대시 최대 속도
+    private bool isDashing = false;          // 대시 상태 여부
+    private float dashCurrentSpeed = 0f;     // 현재 대시 속도
+    private Vector3 dashDirection;           // 대시 방향 (고정)
 
-    // Update is called once per frame
     void Update()
     {
-        float h = Input.GetAxisRaw("Horizontal"); // Raw 입력 사용
-        float v = Input.GetAxisRaw("Vertical");   // Raw 입력 사용
-
-        Vector3 inputDir = new Vector3(h, 0, v).normalized;
-        cc.Move(inputDir * playerMoveSpeed * Time.deltaTime);
-
-        if (inputDir != Vector3.zero)
+        if (isDashing)
         {
-            // 이동 방향에 따른 y축 각도 계산 (라디안->도)
-            float targetYAngle = Mathf.Atan2(inputDir.x, inputDir.z) * Mathf.Rad2Deg;
-            // 기존 localRotation의 값을 그대로 가져옴
-            Vector3 localEuler = modelController.localEulerAngles;
-            // y축만 targetYAngle로 수정
-            localEuler.y = targetYAngle;
-            modelController.localEulerAngles = localEuler;
+            // 대시 이동
+            transform.position += dashDirection * dashCurrentSpeed * Time.deltaTime;
+
+            // 가속 처리
+            dashCurrentSpeed += dashAcceleration * Time.deltaTime;
+            dashCurrentSpeed = Mathf.Min(dashCurrentSpeed, dashMaxSpeed);
+
+            return; // 기본 이동 무시
         }
+
+        // 기본 이동 처리
+        float h = Input.GetAxisRaw("Horizontal");
+        float v = Input.GetAxisRaw("Vertical");
+        Vector3 inputDir = new Vector3(h, 0, v);
 
         if (inputDir != Vector3.zero)
         {
             lastMoveDir = inputDir.normalized;
-            // 이동 및 회전 처리
+            transform.position += lastMoveDir * moveSpeed * Time.deltaTime;
+
+            // 모델 Y축만 회전 (기울기 유지)
+            Vector3 angles = model.localEulerAngles;
+            angles.y = Mathf.Atan2(lastMoveDir.x, lastMoveDir.z) * Mathf.Rad2Deg;
+            model.localEulerAngles = angles;
         }
 
-        // 대쉬 시작
+        // 대시 시작 조건
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            StartDash();
+            isDashing = true;
+            dashCurrentSpeed = dashStartSpeed;
+            dashDirection = lastMoveDir;
+
+            normalModel.SetActive(false);
+            dashModel.SetActive(true);
         }
     }
 
-    void StartDash()
+    private void OnCollisionEnter(Collision collision)
     {
-        isDashing = true;
-        gameObject.SetActive(false);
+        Debug.Log("충돌 시도됨 with: " + collision.gameObject.name);
 
-        GameObject ball = Instantiate(dashBallPrefab, transform.position + Vector3.up * 1.5f, Quaternion.LookRotation(lastMoveDir));
-        ball.GetComponent<PlayerDash>().Init(lastMoveDir, OnDashEnd);
+        if (!isDashing) return;
 
-        Camera.main.GetComponent<CameraFollow>().SetTarget(ball.transform);
-    }
-
-    void OnDashEnd(Vector3 returnPosition)
-    {
-        returnPosition.y -= 1.5f; // Y 보정
-
-        transform.position = returnPosition;
-        gameObject.SetActive(true);
+        // 대시 중 충돌 시 멈춤
         isDashing = false;
+        dashCurrentSpeed = 0f;
 
-        Camera.main.GetComponent<CameraFollow>().SetTarget(transform);
+        normalModel.SetActive(true);
+        dashModel.SetActive(false);
+
+        Debug.Log("대시 중 충돌: " + collision.gameObject.name);
     }
 }
