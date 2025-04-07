@@ -59,7 +59,7 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
+    void OnCollisionEnter(Collision collision)
     {
         Debug.Log("Ãæµ¹ ½ÃµµµÊ with: " + collision.gameObject.name);
 
