@@ -50,6 +50,12 @@ public class PlayerMove : MonoBehaviour
         // 대시 시작 조건
         if (Input.GetKeyDown(KeyCode.Space))
         {
+            if (IsCurrentlyOverlapping())
+            {
+                Debug.Log("이미 충돌 중이라 대시 불가");
+                return;
+            }
+
             isDashing = true;
             dashCurrentSpeed = dashStartSpeed;
             dashDirection = lastMoveDir;
@@ -57,6 +63,25 @@ public class PlayerMove : MonoBehaviour
             normalModel.SetActive(false);
             dashModel.SetActive(true);
         }
+    }
+
+    private bool IsCurrentlyOverlapping()
+    {
+        Collider[] hits = Physics.OverlapSphere(transform.position, 0.65f);
+        int count = 0;
+        foreach (var hit in hits)
+        {
+            if (hit.gameObject != gameObject && hit.tag != "Ground") // 바닥은 무시
+            {
+                count++;
+            }
+        }
+        return count > 0;
+    }
+
+    public bool IsDashing()
+    {
+        return isDashing;
     }
 
     void OnCollisionEnter(Collision collision)
