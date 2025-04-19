@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Marble : MonoBehaviour, IPlayerInteractable
 {
-    [SerializeField] private float shortPushSpeed = 20f;
-    [SerializeField] private float fullPushSpeed = 20f;
+    [SerializeField] private float shortPushSpeed = 15f;
+    [SerializeField] private float fullPushSpeed = 40f;
     [SerializeField] private float deceleration = 10f;
 
     private Vector3 pushDirection;
@@ -26,6 +26,12 @@ public class Marble : MonoBehaviour, IPlayerInteractable
             return;
         }
 
+        if (IsCurrentlyOverlapping())
+        {
+            Debug.Log("[Marble] 벽과 밀착 상태에서 밀기 무시됨");
+            return;
+        }
+
         float speed = player.GetDashSpeed();
         float max = player.GetDashMaxSpeed();
         pushDirection = player.GetLastMoveDirection().normalized;
@@ -33,18 +39,18 @@ public class Marble : MonoBehaviour, IPlayerInteractable
         if (speed < max)
         {
             Debug.Log("[Marble] 약하게 밀림 시작");
-            StartPush(shortPushSpeed, 0f, MarbleState.PushedShort); // 1초 후 정지
+            StartPush(shortPushSpeed, 0f, MarbleState.PushedShort);
         }
         else
         {
             Debug.Log("[Marble] 강하게 밀림 시작");
-            StartPush(fullPushSpeed, 10f, MarbleState.PushedFull); // 1초 후 감속해도 10 유지
+            StartPush(fullPushSpeed, 10f, MarbleState.PushedFull);
         }
     }
 
     private void StartPush(float startSpeed, float min, MarbleState newState)
     {
-        transform.position += pushDirection * 0.2f; // 충돌 해소용 살짝 이동
+        transform.position += pushDirection * 0.2f;
         Debug.Log("[Marble] StartPush 호출됨, 방향: " + pushDirection);
 
         currentSpeed = startSpeed;
@@ -79,11 +85,22 @@ public class Marble : MonoBehaviour, IPlayerInteractable
 
         if (collision.gameObject.CompareTag("Player")) return;
 
-        if (state == MarbleState.PushedFull)
+        // 최대 속도이든 아니든 충돌 시 즉시 정지
+        isMoving = false;
+        currentSpeed = 0f;
+        state = MarbleState.Idle;
+    }
+
+    private bool IsCurrentlyOverlapping()
+    {
+        Collider[] hits = Physics.OverlapSphere(transform.position, 1f);
+        foreach (var hit in hits)
         {
-            isMoving = false;
-            currentSpeed = 0f;
-            state = MarbleState.Idle;
+            if (hit.gameObject != gameObject && hit.tag != "Ground" && hit.tag != "Player")
+            {
+                return true;
+            }
         }
+        return false;
     }
 }
