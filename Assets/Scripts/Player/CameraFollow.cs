@@ -5,7 +5,7 @@ using UnityEngine;
 public class CameraFollow : MonoBehaviour
 {
     [SerializeField] private Transform cameraTransform;
-    [SerializeField] private float followSpeed = 5f;
+    [SerializeField] private float followSpeed = 10f;
 
     private void LateUpdate()
     {

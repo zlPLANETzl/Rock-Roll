@@ -11,27 +11,37 @@ public class PlayerMove : MonoBehaviour
 
     private Vector3 lastMoveDir = Vector3.forward; // 마지막 이동 방향
     private float dashStartSpeed = 10f;     // 대시 시작 속도
-    private float dashAcceleration = 20f;   // 초당 가속량
+    private float dashAcceleration = 80f;   // 초당 가속량
     private float dashMaxSpeed = 50f;       // 대시 최대 속도
     private bool isDashing = false;          // 대시 상태 여부
     private float dashCurrentSpeed = 0f;     // 현재 대시 속도
     private Vector3 dashDirection;           // 대시 방향 (고정)
 
+    // 최대 속도 확인용 임시 코드
+    [SerializeField] private Renderer dashRenderer;
+    [SerializeField] private Color defaultColor = Color.white;
+    [SerializeField] private Color maxSpeedColor = Color.red;
+    private bool isColorChanged = false;
+
     void Update()
     {
         if (isDashing)
         {
-            // 대시 이동
             transform.position += dashDirection * dashCurrentSpeed * Time.deltaTime;
 
-            // 가속 처리
             dashCurrentSpeed += dashAcceleration * Time.deltaTime;
             dashCurrentSpeed = Mathf.Min(dashCurrentSpeed, dashMaxSpeed);
 
-            return; // 기본 이동 무시
+            // 최대 속도 확인용 임시 코드
+            if (dashCurrentSpeed >= dashMaxSpeed && !isColorChanged)
+            {
+                dashRenderer.material.color = maxSpeedColor;
+                isColorChanged = true;
+            }
+
+            return;
         }
 
-        // 기본 이동 처리
         float h = Input.GetAxisRaw("Horizontal");
         float v = Input.GetAxisRaw("Vertical");
         Vector3 inputDir = new Vector3(h, 0, v);
@@ -41,13 +51,11 @@ public class PlayerMove : MonoBehaviour
             lastMoveDir = inputDir.normalized;
             transform.position += lastMoveDir * moveSpeed * Time.deltaTime;
 
-            // 모델 Y축만 회전 (기울기 유지)
             Vector3 angles = model.localEulerAngles;
             angles.y = Mathf.Atan2(lastMoveDir.x, lastMoveDir.z) * Mathf.Rad2Deg;
             model.localEulerAngles = angles;
         }
 
-        // 대시 시작 조건
         if (Input.GetKeyDown(KeyCode.Space))
         {
             if (IsCurrentlyOverlapping())
@@ -71,7 +79,7 @@ public class PlayerMove : MonoBehaviour
         int count = 0;
         foreach (var hit in hits)
         {
-            if (hit.gameObject != gameObject && hit.tag != "Ground") // 바닥은 무시
+            if (hit.gameObject != gameObject && hit.tag != "Ground")
             {
                 count++;
             }
@@ -84,19 +92,43 @@ public class PlayerMove : MonoBehaviour
         return isDashing;
     }
 
+    public float GetDashSpeed()
+    {
+        return dashCurrentSpeed;
+    }
+
+    public float GetDashMaxSpeed()
+    {
+        return dashMaxSpeed;
+    }
+
     void OnCollisionEnter(Collision collision)
     {
         Debug.Log("충돌 시도됨 with: " + collision.gameObject.name);
 
         if (!isDashing) return;
 
-        // 대시 중 충돌 시 멈춤
+        // 인터페이스 기반 상호작용 처리
+        if (collision.gameObject.TryGetComponent<IPlayerInteractable>(out var interactable))
+        {
+            interactable.OnPlayerDashEnter(this);
+        }
+
         isDashing = false;
         dashCurrentSpeed = 0f;
+
+        // 최대 속도 확인용 임시 코드
+        dashRenderer.material.color = defaultColor;
+        isColorChanged = false;
 
         normalModel.SetActive(true);
         dashModel.SetActive(false);
 
         Debug.Log("대시 중 충돌: " + collision.gameObject.name);
+    }
+
+    public Vector3 GetLastMoveDirection()
+    {
+        return lastMoveDir;
     }
 }
