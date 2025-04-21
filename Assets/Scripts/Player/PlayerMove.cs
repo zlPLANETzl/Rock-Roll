@@ -9,7 +9,7 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] private GameObject dashModel;   // 대시 상태 모델
     [SerializeField] private float moveSpeed = 5f; // 기본 이동 속도
 
-    private Vector3 lastMoveDir = Vector3.forward; // 마지막 이동 방향
+    private Vector3 lastMoveDir = Vector3.back; // 마지막 이동 방향
     private float dashStartSpeed = 10f;     // 대시 시작 속도
     private float dashAcceleration = 80f;   // 초당 가속량
     private float dashMaxSpeed = 50f;       // 대시 최대 속도
@@ -107,6 +107,20 @@ public class PlayerMove : MonoBehaviour
         Debug.Log("충돌 시도됨 with: " + collision.gameObject.name);
 
         if (!isDashing) return;
+
+        // IDamageable 대상 처리 (최대 속도일 때만)
+        if (collision.gameObject.TryGetComponent<IDamageable>(out var damageable))
+        {
+            if (dashCurrentSpeed >= dashMaxSpeed)
+            {
+                Debug.Log("[Player] 최대 속도로 충돌 - 피해 처리 시도");
+                damageable.TakeDamage(1);
+            }
+            else
+            {
+                Debug.Log("[Player] 최대 속도 아님 - 피해 없음");
+            }
+        }
 
         // 인터페이스 기반 상호작용 처리
         if (collision.gameObject.TryGetComponent<IPlayerInteractable>(out var interactable))
