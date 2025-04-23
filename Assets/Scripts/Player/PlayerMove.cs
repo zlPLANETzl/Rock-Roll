@@ -75,7 +75,7 @@ public class PlayerMove : MonoBehaviour
 
     private bool IsCurrentlyOverlapping()
     {
-        Collider[] hits = Physics.OverlapSphere(transform.position, 1f);
+        Collider[] hits = Physics.OverlapSphere(transform.position, 0.8f);
         int count = 0;
         foreach (var hit in hits)
         {
