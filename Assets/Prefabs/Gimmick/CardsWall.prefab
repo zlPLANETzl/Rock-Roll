@@ -118,4 +118,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14cf5f5fc9fda7d4996e6dc0bd115642, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHP: 1
+  enemyId: 0

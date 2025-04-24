@@ -1,41 +1,40 @@
 using System.Collections;
 using System.Collections.Generic;
+using UGS;
 using UnityEngine;
 
-public class EnemyController : MonoBehaviour, IDamageable
+public class EnemyController : MonoBehaviour
 {
-    [SerializeField] protected int maxHp = 1;
-    [SerializeField] protected int attackPower = 1;
+    [Header("Enemy 시트 ID (EnemyTable와 매칭)")]
+    [Tooltip("UGS EnemyTable에서 해당하는 enemyId의 데이터를 로드합니다.")]
+    public int enemyId;
 
-    protected int currentHp;
+    [Header("자동으로 세팅되는 값 (읽기 전용)")]
+    public int hp;
+    public int attack;
+    public float speed;
 
-    protected virtual void Awake()
+    void Awake()
     {
-        currentHp = maxHp;
+        UnityGoogleSheet.LoadAllData();
     }
 
-    public void TakeDamage(int amount)
+    /// <summary>
+    /// 시트 데이터 기반으로 hp, attack, speed를 초기화합니다.
+    /// </summary>
+    public virtual void InitializeFromTable()
     {
-        currentHp -= amount;
-        Debug.Log($"[Enemy] 피해: {amount} → 현재 체력: {currentHp}");
-
-        if (currentHp <= 0)
+        if (!EnemyTable.Data.DataMap.ContainsKey(enemyId))
         {
-            Die();
+            Debug.LogWarning($"[EnemyController] ID {enemyId} 데이터 없음");
+            return;
         }
-    }
 
-    public void AttackPlayer(GameObject target)
-    {
-        if (target.TryGetComponent<IDamageable>(out var damageable))
-        {
-            damageable.TakeDamage(attackPower);
-        }
-    }
+        var data = EnemyTable.Data.DataMap[enemyId];
+        hp = data.hp;
+        attack = data.attack;
+        speed = data.speed;
 
-    protected virtual void Die()
-    {
-        Debug.Log("[Enemy] 사망 처리");
-        Destroy(gameObject);
+        Debug.Log($"[EnemyController] 초기화 완료: ID={enemyId}, HP={hp}, ATK={attack}, SPD={speed}");
     }
 }

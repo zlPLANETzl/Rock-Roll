@@ -12,10 +12,10 @@ GameObject:
   - component: {fileID: 1454314439902525642}
   - component: {fileID: 7299612486846773054}
   - component: {fileID: 6797953919637050938}
-  - component: {fileID: 3261906659715298370}
-  - component: {fileID: 8720982320013901610}
+  - component: {fileID: 3684753034372839019}
+  - component: {fileID: 8841867888022588624}
   m_Layer: 0
-  m_Name: Enemy_Static
+  m_Name: BounceEnemy01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -109,7 +109,7 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &3261906659715298370
+--- !u!114 &3684753034372839019
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -118,22 +118,37 @@ MonoBehaviour:
   m_GameObject: {fileID: 6264878961624406297}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e29c3343edd53348b1e90c896609bce, type: 3}
+  m_Script: {fileID: 11500000, guid: f27d3166307865f478563af647d36d39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHp: 1
-  attackPower: 1
---- !u!114 &8720982320013901610
-MonoBehaviour:
+  enemyId: 2
+  hp: 0
+  attack: 0
+  speed: 0
+--- !u!54 &8841867888022588624
+Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6264878961624406297}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cd4690b6130773948b30f2d1bf3cb97e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHp: 1
-  attackPower: 1
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 118
+  m_CollisionDetection: 0

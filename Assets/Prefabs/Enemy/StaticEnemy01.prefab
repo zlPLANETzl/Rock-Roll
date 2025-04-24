@@ -12,11 +12,10 @@ GameObject:
   - component: {fileID: 1697119034593346702}
   - component: {fileID: 6925035203565676720}
   - component: {fileID: 4173908381351221705}
-  - component: {fileID: 5660594025041643471}
-  - component: {fileID: 892555550462056351}
   - component: {fileID: 5885265482624630432}
+  - component: {fileID: -7198087156462002073}
   m_Layer: 0
-  m_Name: Enemy_Bounce
+  m_Name: StaticEnemy01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -110,35 +109,6 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &5660594025041643471
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8514121363499357957}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e29c3343edd53348b1e90c896609bce, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHp: 1
-  attackPower: 1
---- !u!114 &892555550462056351
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8514121363499357957}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f27d3166307865f478563af647d36d39, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHp: 1
-  attackPower: 1
-  moveSpeed: 2
 --- !u!54 &5885265482624630432
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -162,7 +132,23 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 1
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 1
+--- !u!114 &-7198087156462002073
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8514121363499357957}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd4690b6130773948b30f2d1bf3cb97e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyId: 1
+  hp: 0
+  attack: 0
+  speed: 0

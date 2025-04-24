@@ -2,28 +2,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CardsWall : MonoBehaviour, IDamageable
+public class CardsWall : EnemyController, IDamageable
 {
-    [SerializeField] private int maxHP = 1;
-    private int currentHP;
-
-    private void Awake()
+    void Start()
     {
-        currentHP = maxHP;
+        InitializeFromTable();
     }
 
     public void TakeDamage(int amount)
     {
-        currentHP -= amount;
-        if (currentHP <= 0)
+        hp -= amount;
+        Debug.Log($"[CardsWall] ÇÇÇØ {amount} ¡æ ³²Àº HP: {hp}");
+        if (hp <= 0)
         {
             Break();
         }
     }
 
-    public void Break()
+    private void Break()
     {
-        // ÆÄ±« ÀÌÆåÆ®, ¼Ò¸® µî Ãß°¡ °¡´É
+        Debug.Log("[CardsWall] ÆÄ±«µÊ");
         Destroy(gameObject);
     }
 }

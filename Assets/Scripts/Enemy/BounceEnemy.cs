@@ -1,18 +1,23 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class BounceEnemy : EnemyController
+public class BounceEnemy : EnemyController, IDamageable
 {
-    [SerializeField] private float moveSpeed = 2f;
     private Vector3 moveDirection = Vector3.forward;
 
-    private void Update()
+    void Start()
     {
-        transform.position += moveDirection * moveSpeed * Time.deltaTime;
+        InitializeFromTable();
+    }
+
+    void Update()
+    {
+        transform.position += moveDirection * speed * Time.deltaTime;
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        // 벽에 부딪히면 방향 반전
         if (!collision.gameObject.CompareTag("Player"))
         {
             moveDirection = Vector3.Reflect(moveDirection, collision.contacts[0].normal);
@@ -27,8 +32,28 @@ public class BounceEnemy : EnemyController
             }
             else
             {
-                AttackPlayer(player.gameObject);
+                if (collision.gameObject.TryGetComponent<IDamageable>(out var target))
+                {
+                    target.TakeDamage(attack);
+                    Debug.Log($"[BounceEnemy] 플레이어에게 {attack} 피해");
+                }
             }
         }
+    }
+
+    public void TakeDamage(int amount)
+    {
+        hp -= amount;
+        Debug.Log($"[BounceEnemy] 피해 {amount} → 남은 HP: {hp}");
+        if (hp <= 0)
+        {
+            Break();
+        }
+    }
+
+    private void Break()
+    {
+        Debug.Log("[BounceEnemy] 파괴됨");
+        Destroy(gameObject);
     }
 }

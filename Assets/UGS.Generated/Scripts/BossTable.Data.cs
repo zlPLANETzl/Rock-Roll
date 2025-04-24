@@ -14,7 +14,7 @@ using System.Reflection;
 using UnityEngine;
 
 
-namespace EnemyTable
+namespace BossTable
 {
     [GoogleSheet.Attribute.TableStruct]
     public partial class Data : ITable
@@ -23,7 +23,7 @@ namespace EnemyTable
         public delegate void OnLoadedFromGoogleSheets(List<Data> loadedList, Dictionary<int, Data> loadedDictionary);
 
         static bool isLoaded = false;
-        static string spreadSheetID = "1xLzGD0X6sWavbiRCIvkyBk2dS0v2Wpy7JogF2tpxUr0"; // it is file id
+        static string spreadSheetID = "1kg7lMw1XaqfvYxbBgnWMefrenTuvQmS1XHGkHZrLFfU"; // it is file id
         static string sheetID = "0"; // it is sheet id
         static UnityFileReader reader = new UnityFileReader();
 
@@ -56,15 +56,9 @@ namespace EnemyTable
 
 /* Fields. */
 
-		public System.Int32 id;
-		public System.String name;
-		public System.String type;
-		public System.Int32 hp;
-		public System.Int32 attack;
-		public System.Single speed;
-		public System.String aiType;
-		public System.String prefab;
-		public System.String notes;
+		public System.Int32 index;
+		public System.Int32 intValue;
+		public System.String strValue;
   
 
 #region fuctions
@@ -80,7 +74,7 @@ namespace EnemyTable
                  return;
             }
 
-            string text = reader.ReadData("EnemyTable"); 
+            string text = reader.ReadData("BossTable"); 
             if (text != null)
             {
                 var result = Newtonsoft.Json.JsonConvert.DeserializeObject<ReadSpreadSheetResult>(text);
@@ -182,7 +176,7 @@ namespace EnemyTable
                               
                             }
                             List.Add(instance); 
-                            Map.Add(instance.id, instance);
+                            Map.Add(instance.index, instance);
                         }
                         if(isLoaded == false || forceReload)
                         { 
