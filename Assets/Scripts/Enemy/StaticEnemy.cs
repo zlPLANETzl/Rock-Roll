@@ -30,9 +30,9 @@ public class StaticEnemy : EnemyController, IDamageable
                 // 무적 상태지만 대시가 아니므로 아무 일도 하지 않음
                 Debug.Log("[StaticEnemy] 플레이어 무적 상태 - 피해 없음");
             }
-            else if (collision.gameObject.TryGetComponent<PlayerHealth>(out var health))
+            else
             {
-                health.TakeDamage(attack);
+                PlayerHealth.Instance.TakeDamage(attack);
                 Debug.Log($"[StaticEnemy] 플레이어에게 {attack} 피해");
             }
         }
