@@ -34,7 +34,5 @@ public class EnemyController : MonoBehaviour
         hp = data.hp;
         attack = data.attack;
         speed = data.speed;
-
-        Debug.Log($"[EnemyController] 초기화 완료: ID={enemyId}, HP={hp}, ATK={attack}, SPD={speed}");
     }
 }

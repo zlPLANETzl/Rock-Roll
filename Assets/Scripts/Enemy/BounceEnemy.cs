@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BounceEnemy : EnemyController, IDamageable
@@ -26,17 +24,19 @@ public class BounceEnemy : EnemyController, IDamageable
 
         if (collision.gameObject.TryGetComponent<PlayerMove>(out var player))
         {
-            if (player.IsDashing())
+            if (player.IsDashing() && player.IsAtMaxDashSpeed())
             {
                 TakeDamage(1);
             }
-            else
+            else if (player.IsInvincible())
             {
-                if (collision.gameObject.TryGetComponent<IDamageable>(out var target))
-                {
-                    target.TakeDamage(attack);
-                    Debug.Log($"[BounceEnemy] 플레이어에게 {attack} 피해");
-                }
+                // 무적 상태지만 대시가 아니므로 아무 일도 하지 않음
+                Debug.Log("[BounceEnemy] 플레이어 무적 상태 - 피해 없음");
+            }
+            else if (collision.gameObject.TryGetComponent<PlayerHealth>(out var health))
+            {
+                health.TakeDamage(attack);
+                Debug.Log($"[BounceEnemy] 플레이어에게 {attack} 피해");
             }
         }
     }

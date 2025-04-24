@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3266698768039450926}
   - component: {fileID: 7153310294400829288}
   - component: {fileID: 1807101273979362541}
-  - component: {fileID: 790142602962641907}
+  - component: {fileID: -1844888519714696687}
   m_Layer: 0
   m_Name: Marble
   m_TagString: Untagged
@@ -128,7 +128,7 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 116
   m_CollisionDetection: 1
---- !u!65 &790142602962641907
+--- !u!65 &-1844888519714696687
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

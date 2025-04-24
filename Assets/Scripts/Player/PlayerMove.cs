@@ -4,24 +4,25 @@ using UnityEngine;
 
 public class PlayerMove : MonoBehaviour
 {
-    [SerializeField] private Transform model; // 회전 대상 모델
-    [SerializeField] private GameObject normalModel; // 기본 상태 모델
-    [SerializeField] private GameObject dashModel;   // 대시 상태 모델
-    [SerializeField] private float moveSpeed = 5f; // 기본 이동 속도
+    [SerializeField] private Transform model;
+    [SerializeField] private GameObject normalModel;
+    [SerializeField] private GameObject dashModel;
+    [SerializeField] private float moveSpeed = 5f;
 
-    private Vector3 lastMoveDir = Vector3.back; // 마지막 이동 방향
-    private float dashStartSpeed = 10f;     // 대시 시작 속도
-    private float dashAcceleration = 80f;   // 초당 가속량
-    private float dashMaxSpeed = 50f;       // 대시 최대 속도
-    private bool isDashing = false;          // 대시 상태 여부
-    private float dashCurrentSpeed = 0f;     // 현재 대시 속도
-    private Vector3 dashDirection;           // 대시 방향 (고정)
+    private Vector3 lastMoveDir = Vector3.back;
+    private float dashStartSpeed = 10f;
+    private float dashAcceleration = 80f;
+    private float dashMaxSpeed = 50f;
+    private bool isDashing = false;
+    private float dashCurrentSpeed = 0f;
+    private Vector3 dashDirection;
 
-    // 최대 속도 확인용 임시 코드
     [SerializeField] private Renderer dashRenderer;
     [SerializeField] private Color defaultColor = Color.white;
     [SerializeField] private Color maxSpeedColor = Color.red;
     private bool isColorChanged = false;
+
+    private bool isInvincible = false;
 
     void Update()
     {
@@ -32,7 +33,6 @@ public class PlayerMove : MonoBehaviour
             dashCurrentSpeed += dashAcceleration * Time.deltaTime;
             dashCurrentSpeed = Mathf.Min(dashCurrentSpeed, dashMaxSpeed);
 
-            // 최대 속도 확인용 임시 코드
             if (dashCurrentSpeed >= dashMaxSpeed && !isColorChanged)
             {
                 dashRenderer.material.color = maxSpeedColor;
@@ -76,31 +76,22 @@ public class PlayerMove : MonoBehaviour
     private bool IsCurrentlyOverlapping()
     {
         Collider[] hits = Physics.OverlapSphere(transform.position, 0.8f);
-        int count = 0;
         foreach (var hit in hits)
         {
             if (hit.gameObject != gameObject && hit.tag != "Ground")
             {
-                count++;
+                return true;
             }
         }
-        return count > 0;
+        return false;
     }
 
-    public bool IsDashing()
-    {
-        return isDashing;
-    }
-
-    public float GetDashSpeed()
-    {
-        return dashCurrentSpeed;
-    }
-
-    public float GetDashMaxSpeed()
-    {
-        return dashMaxSpeed;
-    }
+    public bool IsDashing() => isDashing;
+    public float GetDashSpeed() => dashCurrentSpeed;
+    public float GetDashMaxSpeed() => dashMaxSpeed;
+    public bool IsAtMaxDashSpeed() => dashCurrentSpeed >= dashMaxSpeed;
+    public Vector3 GetLastMoveDirection() => lastMoveDir;
+    public bool IsInvincible() => isInvincible;
 
     void OnCollisionEnter(Collision collision)
     {
@@ -108,10 +99,9 @@ public class PlayerMove : MonoBehaviour
 
         if (!isDashing) return;
 
-        // IDamageable 대상 처리 (최대 속도일 때만)
         if (collision.gameObject.TryGetComponent<IDamageable>(out var damageable))
         {
-            if (dashCurrentSpeed >= dashMaxSpeed)
+            if (IsAtMaxDashSpeed())
             {
                 Debug.Log("[Player] 최대 속도로 충돌 - 피해 처리 시도");
                 damageable.TakeDamage(1);
@@ -122,7 +112,6 @@ public class PlayerMove : MonoBehaviour
             }
         }
 
-        // 인터페이스 기반 상호작용 처리
         if (collision.gameObject.TryGetComponent<IPlayerInteractable>(out var interactable))
         {
             interactable.OnPlayerDashEnter(this);
@@ -130,8 +119,8 @@ public class PlayerMove : MonoBehaviour
 
         isDashing = false;
         dashCurrentSpeed = 0f;
+        StartCoroutine(TemporaryInvincibility(0.2f));
 
-        // 최대 속도 확인용 임시 코드
         dashRenderer.material.color = defaultColor;
         isColorChanged = false;
 
@@ -141,8 +130,10 @@ public class PlayerMove : MonoBehaviour
         Debug.Log("대시 중 충돌: " + collision.gameObject.name);
     }
 
-    public Vector3 GetLastMoveDirection()
+    private IEnumerator TemporaryInvincibility(float duration)
     {
-        return lastMoveDir;
+        isInvincible = true;
+        yield return new WaitForSeconds(duration);
+        isInvincible = false;
     }
 }
