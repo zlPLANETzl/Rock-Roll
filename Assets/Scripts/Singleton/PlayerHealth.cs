@@ -77,7 +77,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     private void Die()
     {
         Debug.Log("[Player] 사망 처리");
-        // 게임오버, 리스폰 등 후속 처리
+        GameOverUI.Instance.ShowGameOver();  // UI 호출
     }
 
     public int GetHp()

@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 4173908381351221705}
   - component: {fileID: 5885265482624630432}
   - component: {fileID: -7198087156462002073}
+  - component: {fileID: -2311636044662808987}
   m_Layer: 0
   m_Name: StaticEnemy01
   m_TagString: Untagged
@@ -64,7 +65,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 2b793094b49852349a00ff0359a32ac0, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -152,3 +153,15 @@ MonoBehaviour:
   hp: 0
   attack: 0
   speed: 0
+--- !u!114 &-2311636044662808987
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8514121363499357957}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eccca86367db5a64ea666a8e8dab99b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

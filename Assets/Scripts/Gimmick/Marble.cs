@@ -16,6 +16,11 @@ public class Marble : MonoBehaviour, IPlayerInteractable
     private enum MarbleState { Idle, PushedShort, PushedFull }
     private MarbleState state = MarbleState.Idle;
 
+    private void Start()
+    {
+        GameManager.Instance.RegisterOrb(this.gameObject);
+    }
+
     public void OnPlayerDashEnter(PlayerMove player)
     {
         Debug.Log("[Marble] OnPlayerDashEnter »£√‚µ ");
@@ -96,7 +101,7 @@ public class Marble : MonoBehaviour, IPlayerInteractable
         Collider[] hits = Physics.OverlapSphere(transform.position, 1f);
         foreach (var hit in hits)
         {
-            if (hit.gameObject != gameObject && hit.tag != "Ground" && hit.tag != "Player")
+            if (hit.gameObject != gameObject && hit.tag != "Ground" && hit.tag != "Player" && hit.tag != "Item")
             {
                 return true;
             }

@@ -7,6 +7,8 @@ public class BounceEnemy : EnemyController, IDamageable
     void Start()
     {
         InitializeFromTable();
+
+        moveDirection = transform.forward.normalized;
     }
 
     void Update()
@@ -35,8 +37,7 @@ public class BounceEnemy : EnemyController, IDamageable
             }
             else
             {
-                PlayerHealth.Instance.TakeDamage(attack);
-                Debug.Log($"[BounceEnemy] 플레이어에게 {attack} 피해");
+                PlayerHealth.Instance.TakeDamage(attack);                
             }
         }
     }

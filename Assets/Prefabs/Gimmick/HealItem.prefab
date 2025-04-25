@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: -5790411389009061588}
   m_Layer: 0
   m_Name: HealItem
-  m_TagString: Untagged
+  m_TagString: Item
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -120,3 +120,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   healAmount: 1
   pickupEffect: {fileID: 0}
+  rotateDuration: 2
+  floatHeight: 0.25
+  floatDuration: 1

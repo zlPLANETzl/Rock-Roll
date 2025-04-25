@@ -32,8 +32,7 @@ public class StaticEnemy : EnemyController, IDamageable
             }
             else
             {
-                PlayerHealth.Instance.TakeDamage(attack);
-                Debug.Log($"[StaticEnemy] 플레이어에게 {attack} 피해");
+                PlayerHealth.Instance.TakeDamage(attack);                
             }
         }
     }
