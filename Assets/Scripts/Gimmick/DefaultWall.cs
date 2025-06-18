@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class DefaultWall : MonoBehaviour
 {
-    private float push = 0.3f;
+    private float push = 0.15f;
 
     private void OnCollisionEnter(Collision collision)
     {
