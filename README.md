@@ -5,8 +5,9 @@
 ---
 
 ## 📽️ 시연 영상  
-👉 [게임플레이 데모 영상 보기]((https://www.youtube.com/watch?v=sN0KcVdxSR0))  
+[![게임 시연 영상](https://img.youtube.com/vi/sN0KcVdxSR0/0.jpg)](https://www.youtube.com/watch?v=sN0KcVdxSR0)
 
+> ▶ 클릭하면 YouTube에서 전체 영상 보기
 ---
 
 ## 🧩 구현 시스템
