@@ -1,26 +1,60 @@
 using UnityEngine;
+using System.Collections;
 
 public class BounceEnemy : EnemyController, IDamageable
 {
+    private enum BounceState { Move, Turn1, Pause, Turn2 }
+
+    private BounceState currentState = BounceState.Move;
     private Vector3 moveDirection = Vector3.forward;
+    private Quaternion targetRotation;
+
+    [SerializeField] private float rotateSpeed = 360f;
+    [SerializeField] private float pauseDuration = 0.2f;
 
     void Start()
     {
         InitializeFromTable();
-
         moveDirection = transform.forward.normalized;
     }
 
     void Update()
     {
-        transform.position += moveDirection * speed * Time.deltaTime;
+        switch (currentState)
+        {
+            case BounceState.Move:
+                transform.position += moveDirection * speed * Time.deltaTime;
+                break;
+
+            case BounceState.Turn1:
+            case BounceState.Turn2:
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotateSpeed * Time.deltaTime);
+                if (Quaternion.Angle(transform.rotation, targetRotation) < 0.5f)
+                {
+                    if (currentState == BounceState.Turn1)
+                    {
+                        StartCoroutine(EnterPauseState());
+                    }
+                    else if (currentState == BounceState.Turn2)
+                    {
+                        moveDirection = transform.forward.normalized;
+                        currentState = BounceState.Move;
+                    }
+                }
+                break;
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (!collision.gameObject.CompareTag("Player"))
+        if (!collision.gameObject.CompareTag("Player") && currentState == BounceState.Move)
         {
-            moveDirection = Vector3.Reflect(moveDirection, collision.contacts[0].normal);
+            Vector3 normal = collision.contacts[0].normal;
+            Vector3 reflected = Vector3.Reflect(moveDirection, normal);
+
+            // 첫 번째 회전 목표: 현재 방향에서 Y축 기준 +90도
+            targetRotation = Quaternion.Euler(0f, transform.eulerAngles.y + 90f, 0f);
+            currentState = BounceState.Turn1;
             return;
         }
 
@@ -32,14 +66,23 @@ public class BounceEnemy : EnemyController, IDamageable
             }
             else if (player.IsInvincible())
             {
-                // 무적 상태지만 대시가 아니므로 아무 일도 하지 않음
                 Debug.Log("[BounceEnemy] 플레이어 무적 상태 - 피해 없음");
             }
             else
             {
-                PlayerHealth.Instance.TakeDamage(attack);                
+                PlayerHealth.Instance.TakeDamage(attack);
             }
         }
+    }
+
+    private IEnumerator EnterPauseState()
+    {
+        currentState = BounceState.Pause;
+        yield return new WaitForSeconds(pauseDuration);
+
+        // 두 번째 회전 목표: 현재 방향에서 Y축 기준 +90도 (총 180도)
+        targetRotation = Quaternion.Euler(0f, transform.eulerAngles.y + 90f, 0f);
+        currentState = BounceState.Turn2;
     }
 
     public void TakeDamage(int amount)

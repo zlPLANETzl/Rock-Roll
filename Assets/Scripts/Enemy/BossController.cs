@@ -1,92 +1,147 @@
-using DG.Tweening;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BossController : MonoBehaviour, IDamageable
 {
-    [SerializeField] private Renderer[] renderers;
-    [SerializeField] private Color flashColor = Color.red;
+    [Header("카드 공격 설정")]
+    [SerializeField] private GameObject cardProjectilePrefab;
+    [SerializeField] private Transform firePoint;
+    [SerializeField] private float projectileSpeed = 10f;
+    [SerializeField] private Transform playerTarget;
+
+    [Header("마술 모자 설정")]
+    [SerializeField] private GameObject magicHatPrefab;
+    [SerializeField] private float summonRadius = 30f;
+    [SerializeField] private float summonHeight = 10f;
+    [SerializeField] private LayerMask obstacleMask;
+
+    [Header("보스 상태")]
+    [SerializeField] private int maxHP = 3;
+    [SerializeField] private Renderer bossRenderer;
+    [SerializeField] private Color hitColor = Color.red;
     [SerializeField] private float flashDuration = 0.1f;
     [SerializeField] private int flashCount = 3;
 
-    public GameObject projectilePrefab; // Enemy 프리팹
-    public Transform firePoint;
-    public float fireInterval = 2f;
-    private float fireTimer;
+    private int currentHP;
+    private bool isAlive = true;
+    private Color originalColor;
 
-    
-    public int hp = 3;
-
-    void Start()
+    private void Start()
     {
-        fireTimer = fireInterval;
+        if (playerTarget == null)
+        {
+            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+            if (playerObj != null)
+            {
+                Transform target = playerObj.transform.Find("TargetPivot");
+                if (target != null) playerTarget = target;
+            }
+        }
+
+        if (bossRenderer != null)
+        {
+            originalColor = bossRenderer.material.color;
+        }
+
+        currentHP = maxHP;
+        StartCoroutine(BossPatternRoutine());
     }
 
-    void Update()
+    private IEnumerator BossPatternRoutine()
     {
-        AttackPattern();
-    }   
-
-    private void AttackPattern()
-    {
-        fireTimer -= Time.deltaTime;
-        if (fireTimer <= 0f)
+        while (isAlive)
         {
-            FireProjectile();
-            fireTimer = fireInterval;
+            yield return StartCoroutine(ExecuteCardPattern());
+            yield return new WaitForSeconds(1.5f);
+            yield return StartCoroutine(ExecuteSummonPattern());
+            yield return new WaitForSeconds(1.5f);
         }
     }
 
-    private void FireProjectile()
+    private IEnumerator ExecuteCardPattern()
     {
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player == null) return;
+        if (cardProjectilePrefab == null || firePoint == null || playerTarget == null)
+            yield break;
 
-        // Y축 제외하고 수평 방향만 계산
-        Vector3 targetPos = player.transform.position;
-        targetPos.y = firePoint.position.y;
-
-        Vector3 dir = (targetPos - firePoint.position).normalized;
-
-        GameObject proj = Instantiate(projectilePrefab, firePoint.position, Quaternion.LookRotation(dir));
-
-        if (proj.TryGetComponent<BossProjectile>(out var bp))
+        for (int i = 0; i < 3; i++)
         {
-            bp.SetDirection(dir);
+            Vector3 startPos = firePoint.position;
+            startPos.y = 1f;
+            Vector3 direction = (playerTarget.position - startPos).normalized;
+
+            GameObject proj = Instantiate(cardProjectilePrefab, startPos, Quaternion.LookRotation(direction));
+            Rigidbody rb = proj.GetComponent<Rigidbody>();
+            if (rb != null) rb.velocity = direction * projectileSpeed;
+
+            yield return new WaitForSeconds(0.5f);
+        }
+    }
+
+    private IEnumerator ExecuteSummonPattern()
+    {
+        if (magicHatPrefab == null)
+            yield break;
+
+        int count = 0;
+        while (count < 3)
+        {
+            Vector2 randomXZ = Random.insideUnitCircle * summonRadius;
+            Vector3 groundPos = transform.position + new Vector3(randomXZ.x, 0f, randomXZ.y);
+            Vector3 spawnPos = groundPos + Vector3.up * summonHeight;
+
+            if (!Physics.CheckSphere(groundPos, 1f, obstacleMask))
+            {
+                Instantiate(magicHatPrefab, spawnPos, Quaternion.identity);
+                count++;
+                yield return new WaitForSeconds(0.5f);
+            }
+            else
+            {
+                yield return null; // 다음 프레임에 재시도
+            }
         }
     }
 
     public void TakeDamage(int amount)
     {
-        hp -= amount;
-        FlashOnHit();
+        if (!isAlive) return;
 
-        if (hp <= 0)
+        currentHP -= amount;
+        Debug.Log($"[Boss] 피해 {amount} → 남은 HP: {currentHP}");
+
+        if (bossRenderer != null)
+        {
+            StartCoroutine(FlashBlink());
+        }
+
+        if (currentHP <= 0)
         {
             Die();
         }
     }
 
-    private void FlashOnHit()
+    private IEnumerator FlashBlink()
     {
-        foreach (var renderer in renderers)
+        for (int i = 0; i < flashCount; i++)
         {
-            Color originalColor = renderer.material.color;
-            Sequence seq = DOTween.Sequence();
-
-            for (int i = 0; i < flashCount; i++)
-            {
-                seq.Append(renderer.material.DOColor(flashColor, flashDuration / 2f));
-                seq.Append(renderer.material.DOColor(originalColor, flashDuration / 2f));
-            }
+            bossRenderer.material.color = hitColor;
+            yield return new WaitForSeconds(flashDuration);
+            bossRenderer.material.color = originalColor;
+            yield return new WaitForSeconds(flashDuration);
         }
     }
 
     private void Die()
     {
-        Debug.Log("보스 사망! 스테이지 클리어!");
-        GameOverUI.Instance.ShowGameOver("CLEAR");
-        Destroy(gameObject);        
+        isAlive = false;
+        StopAllCoroutines();
+
+        Debug.Log("[Boss] 사망 처리됨");
+        if (GameOverUI.Instance != null)
+        {
+            GameOverUI.Instance.ShowGameOver("CLEAR");
+        }
+
+        Destroy(gameObject);
     }
 }

@@ -3,7 +3,7 @@ using DG.Tweening;
 
 public class GateWall : MonoBehaviour
 {
-    [SerializeField] private float fadeDuration = 1.5f;
+    //[SerializeField] private float fadeDuration = 1.5f;
 
     private void Start()
     {

@@ -7,6 +7,8 @@ public class Marble : MonoBehaviour, IPlayerInteractable
     [SerializeField] private float shortPushSpeed = 15f;
     [SerializeField] private float fullPushSpeed = 40f;
     [SerializeField] private float deceleration = 10f;
+    [SerializeField] private Transform model;
+    [SerializeField] private float rotationMultiplier = 15f;
 
     private Vector3 pushDirection;
     private float currentSpeed = 0f;
@@ -16,9 +18,21 @@ public class Marble : MonoBehaviour, IPlayerInteractable
     private enum MarbleState { Idle, PushedShort, PushedFull }
     private MarbleState state = MarbleState.Idle;
 
+    private Vector3 lastPosition;
+
     private void Start()
     {
-        GameManager.Instance.RegisterOrb(this.gameObject);
+        GameManager gm = FindObjectOfType<GameManager>();
+        if (gm != null)
+        {
+            gm.RegisterOrb(this.gameObject);
+        }
+        else
+        {
+            Debug.LogWarning("[Marble] GameManager를 찾을 수 없습니다.");
+        }
+
+        lastPosition = transform.position;
     }
 
     public void OnPlayerDashEnter(PlayerMove player)
@@ -33,7 +47,7 @@ public class Marble : MonoBehaviour, IPlayerInteractable
 
         if (IsCurrentlyOverlapping())
         {
-            Debug.Log("[Marble] 벽과 밀착 상태에서 밀기 무시됨");
+            Debug.Log("[Marble] 벽과 미차 상태에서 미기 무시됨");
             return;
         }
 
@@ -66,20 +80,33 @@ public class Marble : MonoBehaviour, IPlayerInteractable
 
     private void Update()
     {
-        if (!isMoving) return;
-
-        transform.position += pushDirection * currentSpeed * Time.deltaTime;
-
-        currentSpeed -= deceleration * Time.deltaTime;
-        if (currentSpeed <= minSpeed)
+        if (isMoving)
         {
-            currentSpeed = minSpeed;
-            if (minSpeed == 0f)
+            transform.position += pushDirection * currentSpeed * Time.deltaTime;
+
+            currentSpeed -= deceleration * Time.deltaTime;
+            if (currentSpeed <= minSpeed)
             {
-                isMoving = false;
-                state = MarbleState.Idle;
+                currentSpeed = minSpeed;
+                if (minSpeed == 0f)
+                {
+                    isMoving = false;
+                    state = MarbleState.Idle;
+                }
             }
         }
+
+        // 이동량 기반 회전 연출 처리 (대시 외 직접 밀기 대응 포함)
+        Vector3 delta = transform.position - lastPosition;
+        float distance = delta.magnitude;
+        if (distance > 0.001f && model != null)
+        {
+            Vector3 rotationAxis = -Vector3.Cross(delta.normalized, Vector3.up);
+            float rotationAmount = distance * rotationMultiplier;
+            model.Rotate(rotationAxis, rotationAmount, Space.World);
+        }
+
+        lastPosition = transform.position;
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -90,7 +117,6 @@ public class Marble : MonoBehaviour, IPlayerInteractable
 
         if (collision.gameObject.CompareTag("Player")) return;
 
-        // 최대 속도이든 아니든 충돌 시 즉시 정지
         isMoving = false;
         currentSpeed = 0f;
         state = MarbleState.Idle;

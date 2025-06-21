@@ -5,20 +5,13 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] private GateWall[] gateWalls; // 인스펙터에서 등록
     [SerializeField] private GameObject bossObject;
-    public static GameManager Instance { get; private set; }
 
     private List<GameObject> activeOrbs = new List<GameObject>();
 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        Instance = this;
-        DontDestroyOnLoad(gameObject); // InitScene 구조라면 유지
+        // 싱글톤 제거: 매 씬마다 독립적으로 관리
+        Debug.Log("[GameManager] Awake 호출됨 - 씬 내 오브젝트로 동작");
     }
 
     // 구슬 등록 (게임 시작 시 호출)

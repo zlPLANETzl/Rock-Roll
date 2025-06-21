@@ -5,7 +5,6 @@ using UnityEngine;
 public class PlayerMove : MonoBehaviour
 {
     [SerializeField] private Transform model;
-    [SerializeField] private GameObject normalModel;
     [SerializeField] private GameObject dashModel;
     [SerializeField] private float moveSpeed = 5f;
 
@@ -24,6 +23,8 @@ public class PlayerMove : MonoBehaviour
 
     private bool isInvincible = false;
 
+    [SerializeField] private float rotationMultiplier = 10f;
+
     void Update()
     {
         if (isDashing)
@@ -38,6 +39,10 @@ public class PlayerMove : MonoBehaviour
                 dashRenderer.material.color = maxSpeedColor;
                 isColorChanged = true;
             }
+
+            // 대시 모델 로컬 기준 회전 처리
+            float rotationSpeed = dashCurrentSpeed * rotationMultiplier;
+            dashModel.transform.Rotate(Vector3.right, rotationSpeed * Time.deltaTime, Space.Self);
 
             return;
         }
@@ -68,7 +73,9 @@ public class PlayerMove : MonoBehaviour
             dashCurrentSpeed = dashStartSpeed;
             dashDirection = lastMoveDir;
 
-            normalModel.SetActive(false);
+            // 회전 초기화 및 대시 방향 정렬
+            dashModel.transform.localRotation = Quaternion.identity;
+            dashModel.transform.rotation = Quaternion.LookRotation(dashDirection, Vector3.up);
             dashModel.SetActive(true);
         }
     }
@@ -124,7 +131,6 @@ public class PlayerMove : MonoBehaviour
         dashRenderer.material.color = defaultColor;
         isColorChanged = false;
 
-        normalModel.SetActive(true);
         dashModel.SetActive(false);
 
         Debug.Log("대시 중 충돌: " + collision.gameObject.name);
