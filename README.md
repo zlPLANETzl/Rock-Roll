@@ -5,8 +5,7 @@
 ---
 
 ## 📽️ 시연 영상  
-👉 [게임플레이 데모 영상 보기]([#](https://www.youtube.com/watch?v=sN0KcVdxSR0))  
-> ※ 실제 플레이 화면 링크를 삽입해주세요.
+👉 [게임플레이 데모 영상 보기]((https://www.youtube.com/watch?v=sN0KcVdxSR0))  
 
 ---
 
