@@ -46,7 +46,8 @@ public class MagicHatSpawner : MonoBehaviour
             switch (choice)
             {
                 case 0:
-                    Instantiate(cardWallPrefab, transform.position, Quaternion.identity);
+                    Quaternion cardWallRotation = new Quaternion(0f, 0.7071f, 0f, 0.7071f);
+                    Instantiate(cardWallPrefab, transform.position, cardWallRotation);
                     Debug.Log("[MagicHat] 카드벽 생성");
                     break;
                 case 1:
@@ -59,12 +60,17 @@ public class MagicHatSpawner : MonoBehaviour
             }
         }
 
+        yield return new WaitForSeconds(selfDestructDelay);
+
         if (summonEffectPrefab != null)
         {
-            Instantiate(summonEffectPrefab, transform.position, Quaternion.identity);
+            Vector3 pos = transform.position + Vector3.up * 3f;
+            Quaternion rot = new Quaternion(-0.7071f, 0f, 0f, 0.7071f); // X축 90도 회전
+
+            GameObject fx = Instantiate(summonEffectPrefab, pos, rot);
+            Destroy(fx, 5f);
         }
 
-        yield return new WaitForSeconds(selfDestructDelay);
         Destroy(gameObject);
     }
 }

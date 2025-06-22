@@ -4,7 +4,7 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class BossProjectile : MonoBehaviour
 {
-    [SerializeField] private float lifeTime = 3f;
+    [SerializeField] private float lifeTime = 5f;
     [SerializeField] private float moveSpeed = 10f;
     [SerializeField] private float rotateSpeed = 720f;
     [SerializeField] private int damage = 1;

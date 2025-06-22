@@ -48,7 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardWallPrefab: {fileID: 4268273032871513042, guid: fa05e4fdbb494ee4cbc231197c9d05cc, type: 3}
   healItemPrefab: {fileID: 2251702004952446379, guid: 03e6b8be14f440d44b80b66239fe1c78, type: 3}
-  summonEffectPrefab: {fileID: 0}
+  summonEffectPrefab: {fileID: 7683997983505586199, guid: 55190881604863d47b11964777b60b4d, type: 3}
   summonDelay: 1
   selfDestructDelay: 2
   obstacleMask:
@@ -103,7 +103,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: ebaa5188edd00ad40beb8ed8d7f5d038, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.8
+      value: 1.85
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: ebaa5188edd00ad40beb8ed8d7f5d038, type: 3}
       propertyPath: m_LocalPosition.z
